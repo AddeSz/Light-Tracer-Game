@@ -1,6 +1,6 @@
-import fragmentShaderSource from "./shaders/dynamic-webgl2.frag?raw";
-import vertexShaderSource from "./shaders/dynamic-webgl2.vert?raw";
-import "./style.css";
+import "@/style.css";
+import fragmentShaderSource from "./shaders/dynamic.frag?raw";
+import vertexShaderSource from "./shaders/dynamic.vert?raw";
 
 const SPAWN_RATE = 0.08;
 const MIN_SHAPE_TIME = 0.25;

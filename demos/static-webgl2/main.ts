@@ -1,6 +1,6 @@
-import fragmentShaderSource from "./shaders/static-triangle.frag?raw";
-import vertexShaderSource from "./shaders/static-triangle.vert?raw";
-import "./style.css";
+import "@/style.css";
+import fragmentShaderSource from "./shaders/static.frag?raw";
+import vertexShaderSource from "./shaders/static.vert?raw";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas");
 if (!canvas) {

@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "target": "es2023",
     "module": "esnext",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
+    "types": ["vite/client", "@webgpu/types"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 
@@ -22,5 +25,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts", "demos/**/*.ts", "vite.config.ts"]
 }
