@@ -7,16 +7,6 @@ const WORKGROUP_SIZE = 8;
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas");
 if (!canvas) throw new Error("Canvas not found");
 
-function resizeCanvas(canvas: HTMLCanvasElement) {
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-
-  if (canvas.width !== width || canvas.height !== height) {
-    canvas.width = width;
-    canvas.height = height;
-  }
-}
-
 if (!navigator.gpu) {
   throw new Error("WebGPU not supported on this browser.");
 }
@@ -223,8 +213,6 @@ function draw() {
 }
 
 function frame(timestamp: DOMHighResTimeStamp) {
-  resizeCanvas(canvas!);
-
   if (timestamp - lastUpdateTime >= UPDATE_INTERVAL) {
     simulate();
     lastUpdateTime = timestamp;
@@ -234,5 +222,23 @@ function frame(timestamp: DOMHighResTimeStamp) {
 
   requestAnimationFrame(frame);
 }
+
+function resizeCanvas() {
+  const maxDim = device.limits.maxTextureDimension2D;
+  const size = Math.max(1, Math.min(window.innerWidth, window.innerHeight, maxDim));
+
+  if (canvas!.width === size && canvas!.height === size) return;
+
+  canvas!.style.width = `${size}px`;
+  canvas!.style.height = `${size}px`;
+  canvas!.width = size;
+  canvas!.height = size;
+  draw();
+}
+
+const resizeObserver = new ResizeObserver(() => resizeCanvas());
+resizeObserver.observe(document.documentElement);
+
+resizeCanvas();
 
 requestAnimationFrame(frame);
