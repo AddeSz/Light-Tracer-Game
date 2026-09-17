@@ -6,68 +6,45 @@ struct VertexInput {
 struct VertexOutput {
   @builtin(position) pos: vec4f,
   @location(0) cell: vec2f,
+  @location(1) state: f32,
+  @location(2) localPos: vec2f,
 };
 
 @group(0) @binding(0) var<uniform> grid: vec2f;
 @group(0) @binding(1) var<storage> cellState: array<u32>;
-@group(0) @binding(1) var<storage> cellStateIn: array<u32>;
-@group(0) @binding(2) var<storage, read_write> cellStateOut: array<u32>;
 
 @vertex
 fn vertexMain(input: VertexInput) -> VertexOutput  {
+  var output: VertexOutput;
+
   let i = f32(input.instance);
   let cell = vec2f(i % grid.x, floor(i / grid.x));
   let state = f32(cellState[input.instance]);
 
   let cellOffset = cell / grid * 2;
-  let gridPos = (input.pos*state + 1) / grid - 1 + cellOffset;
-  
-  var output: VertexOutput;
+  let gridPos = (input.pos + 1) / grid - 1 + cellOffset;
+
   output.pos = vec4f(gridPos, 0, 1);
   output.cell = cell;
+  output.state = state;
+  output.localPos = input.pos;
   return output;
 }
 
 @fragment
 fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-    let c = input.cell / grid;
-  return vec4f(c, 1-c.x, 1);
-}
+  let edgeDist = 1.0 - max(abs(input.localPos.x), abs(input.localPos.y));
+  let px = max(
+    fwidth(input.localPos.x),
+    fwidth(input.localPos.y)
+  );
 
-
-fn cellIndex(cell: vec2u) -> u32 {
-  return (cell.y % u32(grid.y)) * u32(grid.x) +
-         (cell.x % u32(grid.x));
-}
-
-fn cellActive(x: u32, y: u32) -> u32 {
-  return cellStateIn[cellIndex(vec2(x, y))];
-}
-
-@compute
-@workgroup_size(8,8)
-fn computeMain(@builtin(global_invocation_id) cell: vec3u) {
-  let activeNeighbors = cellActive(cell.x+1, cell.y+1) +
-                        cellActive(cell.x+1, cell.y) +
-                        cellActive(cell.x+1, cell.y-1) +
-                        cellActive(cell.x, cell.y-1) +
-                        cellActive(cell.x-1, cell.y-1) +
-                        cellActive(cell.x-1, cell.y) +
-                        cellActive(cell.x-1, cell.y+1) +
-                        cellActive(cell.x, cell.y+1);
-
-  let i = cellIndex(cell.xy);
-
-  // rules
-  switch activeNeighbors {
-    case 2: {
-      cellStateOut[i] = cellStateIn[i];
-    }
-    case 3: {
-      cellStateOut[i] = 1;
-    }
-    default: {
-      cellStateOut[i] = 0;
-    }
+  let lineWidthPx = 1.0;
+  if (edgeDist < lineWidthPx * px) {
+    return vec4f(0.1, 0.1, 0.1, 1);
   }
+  if (input.state < 0.5) {
+    discard;
+  }
+  return vec4f(1, 1, 1, 1);
 }

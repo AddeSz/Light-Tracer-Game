@@ -21,22 +21,41 @@ export function configureContext(canvas: HTMLCanvasElement, device: GPUDevice) {
   return { ctx, canvasFormat };
 }
 
-export function createResizeHandler(canvas: HTMLCanvasElement, device: GPUDevice, onResize: () => void) {
+export function createResizeHandler(
+  canvas: HTMLCanvasElement,
+  device: GPUDevice,
+  gridSize: number,
+  onResize: () => void
+) {
   function resizeCanvas() {
     const maxDim = device.limits.maxTextureDimension2D;
-    const size = Math.max(1, Math.min(window.innerWidth, window.innerHeight, maxDim));
+    const dpr = window.devicePixelRatio;
+    const cssSize = Math.min(window.innerWidth, window.innerHeight);
 
-    if (canvas.width === size && canvas.height === size) return;
+    const rawBufferSize = Math.round(cssSize * dpr);
+    const cellPixels = Math.max(1, Math.round(rawBufferSize / gridSize));
+    const bufferSize = Math.min(cellPixels * gridSize, maxDim);
 
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
-    canvas.width = size;
-    canvas.height = size;
+    canvas.style.width = `${cssSize}px`;
+    canvas.style.height = `${cssSize}px`;
+
+    if (canvas.width === bufferSize && canvas.height === bufferSize) return;
+
+    canvas.width = bufferSize;
+    canvas.height = bufferSize;
     onResize();
   }
 
   const resizeObserver = new ResizeObserver(() => resizeCanvas());
   resizeObserver.observe(document.documentElement);
+
+  let dprQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+  function onDprChange() {
+    resizeCanvas();
+    dprQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    dprQuery.addEventListener("change", onDprChange, { once: true });
+  }
+  dprQuery.addEventListener("change", onDprChange, { once: true });
 
   return { resizeCanvas, resizeObserver };
 }

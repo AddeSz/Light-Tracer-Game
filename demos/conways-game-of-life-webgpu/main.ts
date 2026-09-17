@@ -1,5 +1,6 @@
 import "@/style.css";
-import shaderCode from "./shaders/cell.wgsl?raw";
+import cellShaderCode from "./shaders/cell.wgsl?raw";
+import simulationShaderCode from "./shaders/simulation.wgsl?raw";
 import { configureContext, createResizeHandler, requestDevice } from "./utils";
 
 const GRID_SIZE = 32;
@@ -7,7 +8,7 @@ const WORKGROUP_SIZE = 8;
 const UPDATE_INTERVAL = 300;
 
 // Square
-const vertices = new Float32Array([-0.8, -0.8, 0.8, -0.8, 0.8, 0.8, -0.8, -0.8, 0.8, 0.8, -0.8, 0.8]);
+const vertices = new Float32Array([-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1]);
 
 const vertexBufferLayout: GPUVertexBufferLayout = {
   arrayStride: 8,
@@ -23,7 +24,7 @@ const vertexBufferLayout: GPUVertexBufferLayout = {
 function createRandomCellState(): Uint32Array<ArrayBuffer> {
   const cellStateArray = new Uint32Array(GRID_SIZE * GRID_SIZE);
   for (let i = 0; i < cellStateArray.length; ++i) {
-    cellStateArray[i] = Math.random() > 0.6 ? 1 : 0;
+    cellStateArray[i] = Math.random() > 0.75 ? 1 : 0;
   }
   return cellStateArray;
 }
@@ -122,9 +123,9 @@ async function main() {
     ),
   ];
 
-  const shaderModule = device.createShaderModule({
+  const cellShaderModule = device.createShaderModule({
     label: "Shader module",
-    code: shaderCode,
+    code: cellShaderCode,
   });
 
   const pipelineLayout = device.createPipelineLayout({
@@ -135,22 +136,27 @@ async function main() {
     label: "Cell pipeline",
     layout: pipelineLayout,
     vertex: {
-      module: shaderModule,
+      module: cellShaderModule,
       entryPoint: "vertexMain",
       buffers: [vertexBufferLayout],
     },
     fragment: {
-      module: shaderModule,
+      module: cellShaderModule,
       entryPoint: "fragmentMain",
       targets: [{ format: canvasFormat }],
     },
+  });
+
+  const simulationShaderModule = device.createShaderModule({
+    label: "Shader module",
+    code: simulationShaderCode,
   });
 
   const simulationPipeline = device.createComputePipeline({
     label: "Simulation pipeline",
     layout: pipelineLayout,
     compute: {
-      module: shaderModule,
+      module: simulationShaderModule,
       entryPoint: "computeMain",
     },
   });
@@ -181,7 +187,7 @@ async function main() {
         {
           view: ctx!.getCurrentTexture().createView(),
           loadOp: "clear",
-          clearValue: { r: 0, g: 0, b: 0.4, a: 1.0 },
+          clearValue: { r: 0.2, g: 0.2, b: 0.2, a: 1.0 },
           storeOp: "store",
         },
       ],
@@ -207,7 +213,7 @@ async function main() {
     requestAnimationFrame(render);
   }
 
-  const { resizeCanvas } = createResizeHandler(canvas!, device, draw);
+  const { resizeCanvas } = createResizeHandler(canvas!, device, GRID_SIZE, draw);
   resizeCanvas();
 
   requestAnimationFrame(render);
