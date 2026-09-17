@@ -1,4 +1,3 @@
-import "@/style.css";
 import cellShaderCode from "./shaders/cell.wgsl?raw";
 import simulationShaderCode from "./shaders/simulation.wgsl?raw";
 import { configureContext, createResizeHandler, requestDevice } from "./utils";

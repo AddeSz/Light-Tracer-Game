@@ -1,4 +1,3 @@
-import "@/style.css";
 import fragmentShaderSource from "./shaders/dynamic.frag?raw";
 import vertexShaderSource from "./shaders/dynamic.vert?raw";
 

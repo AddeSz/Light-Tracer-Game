@@ -1,4 +1,3 @@
-import "@/style.css";
 import fragmentShaderSource from "./shaders/static.frag?raw";
 import vertexShaderSource from "./shaders/static.vert?raw";
 

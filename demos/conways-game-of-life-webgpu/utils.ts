@@ -27,17 +27,15 @@ export function createResizeHandler(
   gridSize: number,
   onResize: () => void
 ) {
+  const cssSize = 800; // must match #canvas width/height in css...
+
   function resizeCanvas() {
     const maxDim = device.limits.maxTextureDimension2D;
     const dpr = window.devicePixelRatio;
-    const cssSize = Math.min(window.innerWidth, window.innerHeight);
 
     const rawBufferSize = Math.round(cssSize * dpr);
     const cellPixels = Math.max(1, Math.round(rawBufferSize / gridSize));
     const bufferSize = Math.min(cellPixels * gridSize, maxDim);
-
-    canvas.style.width = `${cssSize}px`;
-    canvas.style.height = `${cssSize}px`;
 
     if (canvas.width === bufferSize && canvas.height === bufferSize) return;
 
@@ -45,9 +43,6 @@ export function createResizeHandler(
     canvas.height = bufferSize;
     onResize();
   }
-
-  const resizeObserver = new ResizeObserver(() => resizeCanvas());
-  resizeObserver.observe(document.documentElement);
 
   let dprQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
   function onDprChange() {
@@ -57,5 +52,5 @@ export function createResizeHandler(
   }
   dprQuery.addEventListener("change", onDprChange, { once: true });
 
-  return { resizeCanvas, resizeObserver };
+  return { resizeCanvas };
 }
