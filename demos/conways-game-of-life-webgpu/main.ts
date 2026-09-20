@@ -88,6 +88,8 @@ async function main() {
   const startStopButton = getButton("#start-stop-button");
   const resetClearButton = getButton("#reset-clear-button");
   const nextButton = getButton("#next-button");
+  const generateRandomButton = getButton("#generate-random-button");
+
   const aliveCountLabel = getParagraph("#count-label");
   const stepCountLabel = getParagraph("#step-label");
 
@@ -105,9 +107,14 @@ async function main() {
     stepCountLabel.textContent = `Step Count: ${step}`;
   }
 
+  function updateGenerateRandomButton() {
+    generateRandomButton.disabled = running || step !== 0;
+  }
+
   startStopButton.addEventListener("click", () => {
     running = !running;
     resetClearButton.disabled = false;
+    updateGenerateRandomButton();
     if (running) {
       startStopButton.textContent = "Stop";
       nextButton.disabled = true;
@@ -133,6 +140,7 @@ async function main() {
     startStopButton.disabled = false;
     nextButton.disabled = false;
 
+    updateGenerateRandomButton();
     updateStepCountLabel();
     updateResetClearButton();
     draw();
@@ -144,6 +152,18 @@ async function main() {
       simulate();
       resetClearButton.disabled = false;
     }
+  });
+
+  generateRandomButton.addEventListener("click", () => {
+    initialState = createRandomCellState();
+    device.queue.writeBuffer(cellStateStorage[0], 0, initialState);
+    device.queue.writeBuffer(cellStateStorage[1], 0, new Uint32Array(GRID_SIZE * GRID_SIZE));
+
+    startStopButton.disabled = false;
+    nextButton.disabled = false;
+
+    draw();
+    void updateAliveCount();
   });
 
   canvas.addEventListener("click", (e) => {
@@ -333,6 +353,7 @@ async function main() {
 
         aliveCount = alive;
         updateResetClearButton();
+        updateGenerateRandomButton();
         if (aliveCountLabel) aliveCountLabel.textContent = "Alive count: " + String(aliveCount);
         if (alive === 0) {
           running = false;
@@ -361,6 +382,7 @@ async function main() {
     step++;
     updateStepCountLabel();
     updateResetClearButton();
+    updateGenerateRandomButton();
     void updateAliveCount();
   }
 
@@ -403,6 +425,7 @@ async function main() {
 
   updateStepCountLabel();
   updateResetClearButton();
+  updateGenerateRandomButton();
   await updateAliveCount();
 
   document.querySelector(".layout")?.classList.remove("loading");
