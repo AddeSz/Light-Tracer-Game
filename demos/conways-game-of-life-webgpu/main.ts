@@ -1,7 +1,8 @@
+import { configureContext, requestDevice } from "@/webgpu-utils";
 import cellShaderCode from "./shaders/cell.wgsl?raw";
 import countShaderCode from "./shaders/count.wgsl?raw";
 import simulationShaderCode from "./shaders/simulation.wgsl?raw";
-import { configureContext, createResizeHandler, requestDevice } from "./utils";
+import { createResizeHandler } from "./utils";
 
 const GRID_SIZE = 32;
 const WORKGROUP_SIZE = 8;
