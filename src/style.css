@@ -15,6 +15,10 @@ body {
   font-family: Arial, sans-serif;
 }
 
+p {
+  margin: 0;
+}
+
 #canvas {
   background-color: black;
   display: block;

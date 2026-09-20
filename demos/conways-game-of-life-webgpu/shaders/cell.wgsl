@@ -21,7 +21,8 @@ fn vertexMain(input: VertexInput) -> VertexOutput  {
   let cell = vec2f(i % grid.x, floor(i / grid.x));
   let state = f32(cellState[input.instance]);
 
-  let cellOffset = cell / grid * 2;
+  let screenCell = vec2f(cell.x, grid.y - 1.0 - cell.y);
+  let cellOffset = screenCell / grid * 2;
   let gridPos = (input.pos + 1) / grid - 1 + cellOffset;
 
   output.pos = vec4f(gridPos, 0, 1);

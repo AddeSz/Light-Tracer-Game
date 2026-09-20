@@ -7,55 +7,92 @@
     <title>WebGPU Life</title>
     <link rel="stylesheet" href="/src/style.css" />
     <style>
+      h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+      }
+      p {
+        margin: 0;
+        font-size: 13px;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:disabled {
+        color: #444;
+        cursor: default;
+      }
+
       .layout {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
-        min-height: 100vh;
+        min-height: 100%;
       }
 
-      .toolbar {
+      .loading {
+        visibility: hidden;
+      }
+
+      .col1 {
         grid-column: 1;
         display: flex;
+        align-items: center;
+        justify-content: end;
+      }
+
+      .col-content {
+        display: flex;
         flex-direction: column;
+        height: 800px;
+        width: 120px;
+        padding: 0px 10px;
         gap: 10px;
-        padding: 20px;
-        height: 100vh;
       }
 
-      .toolbar button {
-        width: 200px;
-      }
-
-      .canvas-container {
+      .col2 {
         grid-column: 2;
         display: flex;
-        justify-content: center;
         align-items: center;
-        height: 100vh;
-      }
-
-      .spacer {
-        grid-column: 3;
       }
 
       #canvas {
         background-color: black;
         display: block;
-        width: 800px;
         height: 800px;
+        width: 800px;
+      }
+
+      .col3 {
+        grid-column: 3;
+        display: flex;
+        align-items: center;
       }
     </style>
   </head>
 
   <body>
-    <div class="layout">
-      <div class="toolbar">
-        <button>click</button>
+    <div class="layout loading">
+      <div class="col1">
+        <div class="col-content">
+          <h1>Controls</h1>
+          <button id="start-stop-button" disabled>Start</button>
+          <button id="next-button" disabled>Next</button>
+          <button id="reset-clear-button" disabled>Clear</button>
+        </div>
       </div>
-      <div class="canvas-container">
+      <div class="col2">
         <canvas id="canvas"></canvas>
       </div>
-      <div class="spacer"></div>
+      <div class="col3">
+        <div class="col-content">
+          <h1>Stats</h1>
+          <p id="count-label">Alive count: 0</p>
+          <p id="step-label">Step Count: 0</p>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="./main.ts"></script>
