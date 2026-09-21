@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brick Pattern WebGPU</title>
+    <link rel="stylesheet" href="/src/style.css" />
+
+    <style>
+      .canvas-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #canvas {
+        width: 800px;
+        height: 800px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
