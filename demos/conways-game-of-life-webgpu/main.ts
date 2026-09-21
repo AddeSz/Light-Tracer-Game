@@ -1,4 +1,4 @@
-import { configureContext, requestDevice } from "@/webgpu-utils";
+import { configureContext, createBuffer, requestDevice } from "@/webgpu-utils";
 import cellShaderCode from "./shaders/cell.wgsl?raw";
 import countShaderCode from "./shaders/count.wgsl?raw";
 import simulationShaderCode from "./shaders/simulation.wgsl?raw";
@@ -28,16 +28,6 @@ function createRandomCellState(): Uint32Array<ArrayBuffer> {
     cellStateArray[i] = Math.random() > 0.75 ? 1 : 0;
   }
   return cellStateArray;
-}
-
-function createBuffer(device: GPUDevice, label: string, data: Float32Array | Uint32Array, usage: GPUBufferUsageFlags) {
-  const buffer = device.createBuffer({
-    label,
-    size: data.byteLength,
-    usage,
-  });
-  device.queue.writeBuffer(buffer, 0, data);
-  return buffer;
 }
 
 function createCellBindGroup(

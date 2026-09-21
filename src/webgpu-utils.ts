@@ -20,3 +20,18 @@ export function configureContext(canvas: HTMLCanvasElement, device: GPUDevice) {
 
   return { ctx, canvasFormat };
 }
+
+export function createBuffer(
+  device: GPUDevice,
+  label: string,
+  data: Float32Array | Uint32Array,
+  usage: GPUBufferUsageFlags
+) {
+  const buffer = device.createBuffer({
+    label,
+    size: data.byteLength,
+    usage,
+  });
+  device.queue.writeBuffer(buffer, 0, data);
+  return buffer;
+}
