@@ -2,19 +2,59 @@ import { configureContext, createBuffer, requestDevice } from "@/webgpu-utils";
 import shaderCode from "./shaders/brick.wgsl?raw";
 
 const params = {
-  brickColor: [0.7, 0.2, 0.1, 1],
-  mortarColor: [0.1, 0.1, 0.1, 1],
-  brickSize: [100, 50],
+  brickWidth: 100,
+  brickHeight: 50,
   mortar: 4,
+  offsetX: 0,
+  offsetY: 0,
+  brickColor: "#b3331a",
+  mortarColor: "#1a1a1a",
 };
 
+function hexToRgba(hex: string): number[] {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => c / 255).concat(1);
+}
+
 function packParams(scale: number): Float32Array {
-  return new Float32Array([...params.brickColor, ...params.mortarColor, ...params.brickSize, params.mortar, scale]);
+  const mortar = Math.min(params.mortar, Math.min(params.brickWidth, params.brickHeight) - 1);
+  return new Float32Array([
+    ...hexToRgba(params.brickColor),
+    ...hexToRgba(params.mortarColor),
+    params.brickWidth,
+    params.brickHeight,
+    mortar,
+    scale,
+    params.offsetX,
+    params.offsetY,
+    0,
+    0,
+  ]);
+}
+function bindControls() {
+  document.querySelectorAll<HTMLInputElement>("input[data-param]").forEach((input) => {
+    const key = input.dataset.param!;
+    const values = params as Record<string, string | number>;
+    const out = input.parentElement?.querySelector("output");
+
+    const sync = () => {
+      if (out) out.textContent = input.value;
+    };
+
+    input.value = String(values[key]);
+    sync();
+
+    input.addEventListener("input", () => {
+      values[key] = input.type === "range" ? Number(input.value) : input.value;
+      sync();
+    });
+  });
 }
 
 async function main() {
   const canvas = document.querySelector<HTMLCanvasElement>("#canvas");
   if (!canvas) throw new Error("Canvas not found");
+  bindControls();
 
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
@@ -76,7 +116,14 @@ async function main() {
     device.queue.submit([encoder.finish()]);
   }
 
-  render();
+  function frame(_time: number) {
+    device.queue.writeBuffer(uniformBuffer, 0, packParams(dpr));
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  document.querySelector(".layout")?.classList.remove("loading");
+  requestAnimationFrame(frame);
 }
 
 main();
