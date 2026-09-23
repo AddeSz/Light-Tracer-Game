@@ -1,13 +1,18 @@
+import { CubeMesh } from "../model/cube";
 import { SquareMesh } from "../model/square";
 import shaderCode from "../shaders/shader.wgsl?raw";
 
+export const SAMPLE_COUNT = 4;
+
 export type RendererResources = {
-  mesh: SquareMesh;
+  squareMesh: SquareMesh;
+  cubeMesh: CubeMesh;
   objectBuffer: GPUBuffer;
   uniformBuffer: GPUBuffer;
   bindGroup: GPUBindGroup;
   pipeline: GPURenderPipeline;
   depthStencilState: GPUDepthStencilState;
+  format: GPUTextureFormat;
 };
 
 export async function setupDevice(canvas: HTMLCanvasElement) {
@@ -28,7 +33,8 @@ export async function setupDevice(canvas: HTMLCanvasElement) {
 }
 
 export function createResources(device: GPUDevice, format: GPUTextureFormat): RendererResources {
-  const mesh = new SquareMesh(device);
+  const squareMesh = new SquareMesh(device);
+  const cubeMesh = new CubeMesh(device);
 
   const objectBuffer = device.createBuffer({
     label: "Object buffer",
@@ -69,11 +75,12 @@ export function createResources(device: GPUDevice, format: GPUTextureFormat): Re
   const pipeline = device.createRenderPipeline({
     label: "Render pipeline",
     layout: pipelineLayout,
-    vertex: { module: shaderModule, entryPoint: "vertexMain", buffers: [mesh.bufferLayout] },
+    vertex: { module: shaderModule, entryPoint: "vertexMain", buffers: [squareMesh.bufferLayout] },
     fragment: { module: shaderModule, entryPoint: "fragmentMain", targets: [{ format }] },
     primitive: { topology: "triangle-list" },
     depthStencil: depthStencilState,
+    multisample: { count: SAMPLE_COUNT },
   });
 
-  return { mesh, objectBuffer, uniformBuffer, bindGroup, pipeline, depthStencilState };
+  return { squareMesh, cubeMesh, objectBuffer, uniformBuffer, bindGroup, pipeline, depthStencilState, format };
 }
