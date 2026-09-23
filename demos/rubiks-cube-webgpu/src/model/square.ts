@@ -1,3 +1,32 @@
+import { mat4, vec3 } from "gl-matrix";
+import { deg2rad } from "../main";
+
+export class Square {
+  position: vec3;
+  eulers: vec3;
+  model: mat4;
+
+  constructor(position: vec3, theta: number) {
+    this.position = position;
+    this.eulers = vec3.create();
+    this.eulers[2] = theta;
+    this.model = mat4.create();
+  }
+
+  update(deltaTime: number) {
+    this.eulers[2] += 60 * deltaTime;
+    this.eulers[2] %= 360;
+
+    mat4.identity(this.model);
+    mat4.translate(this.model, this.model, this.position);
+    mat4.rotateZ(this.model, this.model, deg2rad(this.eulers[2]));
+  }
+
+  getModel(): mat4 {
+    return this.model;
+  }
+}
+
 export class SquareMesh {
   buffer: GPUBuffer;
   bufferLayout: GPUVertexBufferLayout;
@@ -19,7 +48,7 @@ export class SquareMesh {
     ]);
 
     this.buffer = device.createBuffer({
-      label: "Vertex buffer",
+      label: "Square Vertex buffer",
       size: vertices.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
       mappedAtCreation: true,

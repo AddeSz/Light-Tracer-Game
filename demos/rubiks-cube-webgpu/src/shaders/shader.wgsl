@@ -1,4 +1,5 @@
 struct VertexInput {
+  @builtin(instance_index) id : u32,
   @location(0) position: vec3f,
   @location(1) color: vec3f,
 }
@@ -8,17 +9,17 @@ struct VertexOutput {
 }
 
 struct Uniforms {
-  model: mat4x4f,
   view: mat4x4f,
   projection: mat4x4f,
 }
 
 @group(0) @binding(0) var<uniform> uniforms: Uniforms;
+@group(0) @binding(1) var<storage, read> objects: array<mat4x4f>;
 
 @vertex
 fn vertexMain(input: VertexInput) -> VertexOutput {
   var output: VertexOutput;
-  output.position = uniforms.projection * uniforms.view * uniforms.model * vec4f(input.position, 1.0);
+  output.position = uniforms.projection * uniforms.view * objects[input.id] * vec4f(input.position, 1.0);
   output.color = vec4f(input.color, 1.0);
   return output;
 }
