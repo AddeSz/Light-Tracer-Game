@@ -8,26 +8,17 @@ struct VertexOutput {
 }
 
 struct Uniforms {
-  time: f32,
+  model: mat4x4f,
+  view: mat4x4f,
+  projection: mat4x4f,
 }
 
 @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
 @vertex
 fn vertexMain(input: VertexInput) -> VertexOutput {
-
-  let angle = uniforms.time;
-  let c = cos(angle);
-  let s = sin(angle);
-  let pos = input.position;
-  let rotated = vec3f(
-    pos.x * c - pos.y * s,
-    pos.x * s + pos.y * c,
-    0.0
-  );
-
   var output: VertexOutput;
-  output.position = vec4f(rotated, 1.0);
+  output.position = uniforms.projection * uniforms.view * uniforms.model * vec4f(input.position, 1.0);
   output.color = vec4f(input.color, 1.0);
   return output;
 }
