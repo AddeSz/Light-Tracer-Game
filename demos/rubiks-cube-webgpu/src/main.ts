@@ -3,8 +3,6 @@ import { Camera } from "./camera";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
 
-export const deg2rad = (degrees: number) => degrees * (Math.PI / 180);
-
 const turns: Record<string, { axis: number; layer: number; direction: number }> = {
   KeyR: { axis: 0, layer: 1, direction: -1 },
   KeyL: { axis: 0, layer: -1, direction: 1 },

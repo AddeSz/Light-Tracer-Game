@@ -1,5 +1,6 @@
 import { mat4, vec3 } from "gl-matrix";
-import { deg2rad } from "../main";
+
+const deg2rad = (degrees: number) => degrees * (Math.PI / 180);
 
 export class Square {
   position: vec3;
