@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix";
+import type { Camera } from "../camera";
 import type { Scene } from "../scene";
 import { createResources, SAMPLE_COUNT, setupDevice, type RendererResources } from "./renderer-resources";
 
@@ -32,12 +32,13 @@ export class Renderer {
     return new Renderer(canvas, device, context, resources);
   }
 
-  async render(scene: Scene, deltaTime: number) {
+  async render(scene: Scene, camera: Camera, deltaTime: number) {
     scene.update(deltaTime);
     this.updateDepthBuffer();
 
-    const view = mat4.lookAt(mat4.create(), [-5, -10, 5], [0, 0, 0], [0, 0, 1]);
-    const projection = mat4.perspective(mat4.create(), Math.PI / 3, this.canvas.width / this.canvas.height, 0.1, 100);
+    camera.aspect = this.canvas.width / this.canvas.height;
+    const view = camera.getViewMatrix();
+    const projection = camera.getProjectionMatrix();
 
     const cubes = scene.getCubes();
 

@@ -1,4 +1,5 @@
 import { resizeCanvas } from "@/webgpu-utils";
+import { Camera } from "./camera";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
 
@@ -10,13 +11,14 @@ async function main() {
 
   const renderer = await Renderer.build(canvas);
   const scene = new Scene();
+  const camera = new Camera(canvas);
 
   let lastTime = 0;
   function frame(time: number) {
     const deltaTime = (time - lastTime) / 1000;
     lastTime = time;
     resizeCanvas(canvas!, renderer.device);
-    renderer.render(scene, deltaTime);
+    renderer.render(scene, camera, deltaTime);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
