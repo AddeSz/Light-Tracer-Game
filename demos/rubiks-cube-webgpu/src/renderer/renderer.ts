@@ -36,16 +36,14 @@ export class Renderer {
     scene.update(deltaTime);
     this.updateDepthBuffer();
 
-    const view = mat4.lookAt(mat4.create(), [-4, 0, 0], [0, 0, 0], [0, 0, 1]);
-    const projection = mat4.perspective(mat4.create(), Math.PI / 4, this.canvas.width / this.canvas.height, 0.1, 10);
+    const view = mat4.lookAt(mat4.create(), [-5, -10, 5], [0, 0, 0], [0, 0, 1]);
+    const projection = mat4.perspective(mat4.create(), Math.PI / 3, this.canvas.width / this.canvas.height, 0.1, 100);
 
-    const squares = scene.getSquares();
     const cubes = scene.getCubes();
 
     this.device.queue.writeBuffer(this.resources.uniformBuffer, 0, view as Float32Array);
     this.device.queue.writeBuffer(this.resources.uniformBuffer, 64, projection as Float32Array);
-    this.device.queue.writeBuffer(this.resources.objectBuffer, 0, scene.getSquareData());
-    this.device.queue.writeBuffer(this.resources.objectBuffer, squares.length * 64, scene.getCubeData());
+    this.device.queue.writeBuffer(this.resources.objectBuffer, 0, scene.getCubeData());
 
     const encoder = this.device.createCommandEncoder();
     const pass = encoder.beginRenderPass({
@@ -63,11 +61,8 @@ export class Renderer {
 
     pass.setPipeline(this.resources.pipeline);
     pass.setBindGroup(0, this.resources.bindGroup);
-    pass.setVertexBuffer(0, this.resources.squareMesh.buffer);
-    pass.draw(6, squares.length, 0, 0);
-
     pass.setVertexBuffer(0, this.resources.cubeMesh.buffer);
-    pass.draw(this.resources.cubeMesh.vertexCount, cubes.length, 0, squares.length);
+    pass.draw(this.resources.cubeMesh.vertexCount, cubes.length, 0);
     pass.end();
 
     this.device.queue.submit([encoder.finish()]);

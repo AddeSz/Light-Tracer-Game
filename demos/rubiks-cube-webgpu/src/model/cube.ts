@@ -1,25 +1,17 @@
 import { mat4, vec3 } from "gl-matrix";
-import { deg2rad } from "../main";
 
 export class Cube {
   position: vec3;
-  eulers: vec3;
   model: mat4;
 
-  constructor(position: vec3, theta: number) {
+  constructor(position: vec3) {
     this.position = position;
-    this.eulers = vec3.create();
-    this.eulers[2] = theta;
     this.model = mat4.create();
   }
 
-  update(deltaTime: number) {
-    this.eulers[2] += 60 * deltaTime;
-    this.eulers[2] %= 360;
-
+  update() {
     mat4.identity(this.model);
     mat4.translate(this.model, this.model, this.position);
-    mat4.rotateZ(this.model, this.model, deg2rad(this.eulers[2]));
   }
 
   getModel(): mat4 {
@@ -34,12 +26,14 @@ export class CubeMesh {
 
   constructor(device: GPUDevice) {
     const faces = [
-      this.makeFace([0, 0, 1], [1, 0, 0]),
-      this.makeFace([0, 0, -1], [0, 1, 0]),
-      this.makeFace([0, 1, 0], [0, 0, 1]),
-      this.makeFace([0, -1, 0], [1, 1, 0]),
-      this.makeFace([1, 0, 0], [0, 1, 1]),
-      this.makeFace([-1, 0, 0], [1, 0, 1]),
+      this.makeFace([0, 1, 0], [1, 0.5, 0]),
+      this.makeFace([0, -1, 0], [1, 0, 0]),
+
+      this.makeFace([0, 0, 1], [1, 1, 1]),
+      this.makeFace([0, 0, -1], [1, 1, 0]),
+
+      this.makeFace([1, 0, 0], [0, 0, 1]),
+      this.makeFace([-1, 0, 0], [0, 1, 0]),
     ];
 
     const vertices = new Float32Array(faces.flat());
