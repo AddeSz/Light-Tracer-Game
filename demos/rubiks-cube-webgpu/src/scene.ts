@@ -1,6 +1,8 @@
 import { type vec3 } from "gl-matrix";
 import { Cube } from "./model/cube";
 
+type QueuedTurn = { axis: number; layer: number; direction: number };
+
 export class Scene {
   cubes: Cube[];
   private cubeData: Float32Array;
@@ -8,11 +10,12 @@ export class Scene {
   private turnActive = false;
   private turnProgress = 0;
   private readonly turnTarget = Math.PI / 2;
-  private readonly turnSpeed = Math.PI;
+  private turnSpeed = Math.PI / 2;
 
   private turnAxis: vec3 = [0, 1, 0];
   private turnDirection = 1;
   private turnCubes: Cube[] = [];
+  private moveQueue: QueuedTurn[] = [];
 
   constructor() {
     this.cubes = [];
@@ -27,8 +30,7 @@ export class Scene {
     this.cubeData = new Float32Array(this.cubes.length * Cube.FLOATS);
   }
 
-  startTurn(axisIndex: number, layer: number, direction: number) {
-    if (this.turnActive) return;
+  private beginTurn(axisIndex: number, layer: number, direction: number) {
     const axis: vec3 = [0, 0, 0];
     axis[axisIndex] = 1;
     this.turnAxis = axis;
@@ -39,13 +41,46 @@ export class Scene {
     this.turnActive = true;
   }
 
+  queueMove(axisIndex: number, layer: number, direction: number) {
+    this.moveQueue.push({ axis: axisIndex, layer, direction });
+  }
+
+  setTurnSpeed(radiansPerSecond: number) {
+    this.turnSpeed = radiansPerSecond;
+  }
+
+  scramble(count = 20) {
+    for (let i = 0; i < count; i++) {
+      const axis = Math.floor(Math.random() * 3);
+      const layer = Math.random() < 0.5 ? -1 : 1;
+      const direction = Math.random() < 0.5 ? 1 : -1;
+      this.queueMove(axis, layer, direction);
+    }
+  }
+
+  reset() {
+    this.moveQueue = [];
+    this.turnActive = false;
+    this.turnProgress = 0;
+
+    this.cubes = [];
+    for (let x = -1; x <= 1; x++)
+      for (let y = -1; y <= 1; y++)
+        for (let z = -1; z <= 1; z++) {
+          if (x === 0 && y === 0 && z === 0) continue;
+          this.cubes.push(new Cube([x, y, z]));
+        }
+  }
+
   update(deltaTime: number) {
-    if (!this.turnActive) return;
+    if (!this.turnActive) {
+      const next = this.moveQueue.shift();
+      if (!next) return;
+      this.beginTurn(next.axis, next.layer, next.direction);
+    }
 
     const step = Math.min(this.turnSpeed * deltaTime, this.turnTarget - this.turnProgress);
-
     this.turnCubes.forEach((cube) => cube.rotateAround(this.turnAxis, step * this.turnDirection));
-
     this.turnProgress += step;
 
     if (this.turnTarget - this.turnProgress < 1e-6) {

@@ -12,6 +12,55 @@
       <canvas id="canvas"></canvas>
     </div>
 
+    <button id="menu-toggle" aria-label="Open menu">☰</button>
+
+    <nav id="menu" class="menu">
+      <div class="menu-header">
+        <span class="menu-title">Rubik's Cube</span>
+        <button id="menu-close" class="menu-close" aria-label="Close menu">✕</button>
+      </div>
+      <div class="speed-control">
+        <label for="speed-slider">Speed</label>
+        <input type="range" id="speed-slider" min="0" max="3" step="1" value="1" />
+        <span id="speed-value">Medium</span>
+      </div>
+    </nav>
+
+    <div class="action-buttons">
+      <button id="scramble-btn" class="action-btn action-btn--scramble">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="16 3 21 3 21 8" />
+          <line x1="4" y1="20" x2="21" y2="3" />
+          <polyline points="21 16 21 21 16 21" />
+          <line x1="15" y1="15" x2="21" y2="21" />
+          <line x1="4" y1="4" x2="9" y2="9" />
+        </svg>
+        Scramble
+      </button>
+
+      <button id="reset-btn" class="action-btn action-btn--reset">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="1 4 1 10 7 10" />
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+        </svg>
+        Reset
+      </button>
+    </div>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

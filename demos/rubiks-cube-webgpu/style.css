@@ -20,12 +20,6 @@ h1 {
   margin: 0;
 }
 
-.layout {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  height: 100%;
-}
-
 .loading {
   visibility: hidden;
 }
@@ -44,4 +38,162 @@ h1 {
   width: 100%;
   height: 100%;
   touch-action: none;
+}
+
+#menu-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+#menu-toggle.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 240px;
+  background: rgba(17, 17, 17, 0.85);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 20px 10px;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 5;
+}
+
+.menu.open {
+  transform: translateX(0);
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.menu-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.menu-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.menu-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.action-buttons {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+  transition: bottom 0.25s ease;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.action-btn:hover {
+  background: #2a2a2a;
+}
+
+.action-btn--reset {
+  background: #6b1f1f;
+}
+
+.action-btn--reset:hover {
+  background: #7f2626;
+}
+
+.action-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.speed-control label {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.speed-control input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: #4a7ba6;
+}
+
+#speed-value {
+  min-width: 50px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .menu {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    max-height: 20%;
+    width: 100%;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(100%);
+    overflow-y: auto;
+  }
+
+  .menu.open {
+    transform: translateY(0);
+  }
+
+  .action-buttons {
+    bottom: calc(var(--menu-offset, 0px) + 16px);
+  }
 }
