@@ -31,9 +31,6 @@ function setupUI(scene: Scene) {
     scene.queueMove(turn.axis, turn.layer, direction);
   });
 
-  const menuToggle = document.querySelector("#menu-toggle");
-  const menuClose = document.querySelector("#menu-close");
-  const menu = document.querySelector<HTMLElement>("#menu")!;
   const speedSlider = document.querySelector<HTMLInputElement>("#speed-slider")!;
   const speedValue = document.querySelector("#speed-value")!;
 
@@ -42,25 +39,6 @@ function setupUI(scene: Scene) {
     scene.setTurnSpeed(speed.value);
     speedValue.textContent = speed.label;
   }
-
-  function updateMenuOffset() {
-    const offset = menu.classList.contains("open") ? menu.getBoundingClientRect().height : 0;
-    document.documentElement.style.setProperty("--menu-offset", `${offset}px`);
-  }
-
-  new ResizeObserver(updateMenuOffset).observe(menu);
-
-  menuToggle?.addEventListener("click", () => {
-    menu.classList.add("open");
-    menuToggle.classList.add("hidden");
-    updateMenuOffset();
-  });
-
-  menuClose?.addEventListener("click", () => {
-    menu.classList.remove("open");
-    menuToggle?.classList.remove("hidden");
-    updateMenuOffset();
-  });
 
   document.querySelector("#scramble-btn")?.addEventListener("click", () => {
     scene.scramble();
@@ -94,7 +72,7 @@ async function main() {
   }
   requestAnimationFrame(frame);
 
-  document.querySelector<HTMLElement>(".container")?.classList.remove("loading");
+  document.body.classList.remove("loading");
 }
 
 main();

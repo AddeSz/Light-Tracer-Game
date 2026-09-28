@@ -7,24 +7,16 @@
     <title>Rubik's Cube WebGPU</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
-    <div class="container loading">
+  <body class="loading">
+    <div class="container">
       <canvas id="canvas"></canvas>
     </div>
 
-    <button id="menu-toggle" aria-label="Open menu">☰</button>
-
-    <nav id="menu" class="menu">
-      <div class="menu-header">
-        <span class="menu-title">Rubik's Cube</span>
-        <button id="menu-close" class="menu-close" aria-label="Close menu">✕</button>
-      </div>
-      <div class="speed-control">
-        <label for="speed-slider">Speed</label>
-        <input type="range" id="speed-slider" min="0" max="3" step="1" value="1" />
-        <span id="speed-value">Medium</span>
-      </div>
-    </nav>
+    <div class="speed-control">
+      <label for="speed-slider">Speed</label>
+      <input type="range" id="speed-slider" min="0" max="3" step="1" value="1" />
+      <span id="speed-value">Medium</span>
+    </div>
 
     <div class="action-buttons">
       <button id="scramble-btn" class="action-btn action-btn--scramble">
