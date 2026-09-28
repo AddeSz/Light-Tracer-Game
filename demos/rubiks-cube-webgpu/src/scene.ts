@@ -50,12 +50,25 @@ export class Scene {
   }
 
   scramble(count = 20) {
+    let last: QueuedTurn | undefined = this.moveQueue[this.moveQueue.length - 1];
+
     for (let i = 0; i < count; i++) {
-      const axis = Math.floor(Math.random() * 3);
-      const layer = Math.random() < 0.5 ? -1 : 1;
-      const direction = Math.random() < 0.5 ? 1 : -1;
-      this.queueMove(axis, layer, direction);
+      let move: QueuedTurn;
+      do {
+        move = {
+          axis: Math.floor(Math.random() * 3),
+          layer: Math.random() < 0.5 ? -1 : 1,
+          direction: Math.random() < 0.5 ? 1 : -1,
+        };
+      } while (last && Scene.isInverse(move, last));
+
+      this.queueMove(move.axis, move.layer, move.direction);
+      last = move;
     }
+  }
+
+  private static isInverse(a: QueuedTurn, b: QueuedTurn): boolean {
+    return a.axis === b.axis && a.layer === b.layer && a.direction === -b.direction;
   }
 
   reset() {
