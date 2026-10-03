@@ -45,6 +45,10 @@ export class Scene {
     this.moveQueue.push({ axis: axisIndex, layer, direction });
   }
 
+  isBusy(): boolean {
+    return this.turnActive || this.moveQueue.length > 0;
+  }
+
   setTurnSpeed(radiansPerSecond: number) {
     this.turnSpeed = radiansPerSecond;
   }

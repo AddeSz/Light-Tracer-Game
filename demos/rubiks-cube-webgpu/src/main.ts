@@ -1,19 +1,8 @@
 import { resizeCanvas } from "@/webgpu-utils";
 import { Camera } from "./camera";
+import { setupInput } from "./input";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
-
-const turns: Record<string, { axis: number; layer: number; direction: number }> = {
-  KeyR: { axis: 0, layer: 1, direction: -1 },
-  KeyL: { axis: 0, layer: -1, direction: 1 },
-  KeyB: { axis: 1, layer: 1, direction: -1 },
-  KeyF: { axis: 1, layer: -1, direction: 1 },
-  KeyU: { axis: 2, layer: 1, direction: -1 },
-  KeyD: { axis: 2, layer: -1, direction: 1 },
-  KeyM: { axis: 0, layer: 0, direction: 1 },
-  KeyE: { axis: 2, layer: 0, direction: 1 },
-  KeyS: { axis: 1, layer: 0, direction: 1 },
-};
 
 const speeds = [
   { label: "Slow", value: Math.PI }, // 0.5s
@@ -23,14 +12,6 @@ const speeds = [
 ];
 
 function setupUI(scene: Scene) {
-  window.addEventListener("keydown", (e) => {
-    const turn = turns[e.code];
-    if (!turn) return;
-
-    const direction = e.shiftKey ? -turn.direction : turn.direction;
-    scene.queueMove(turn.axis, turn.layer, direction);
-  });
-
   const speedSlider = document.querySelector<HTMLInputElement>("#speed-slider")!;
   const speedValue = document.querySelector("#speed-value")!;
 
@@ -58,8 +39,9 @@ async function main() {
 
   const renderer = await Renderer.build(canvas);
   const scene = new Scene();
-  const camera = new Camera(canvas);
+  const camera = new Camera();
 
+  setupInput({ canvas, scene, camera });
   setupUI(scene);
 
   let lastTime = 0;
