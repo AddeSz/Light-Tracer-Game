@@ -1,7 +1,7 @@
 import { resizeCanvas } from "@/webgpu-utils";
 import { Camera } from "./camera";
 import { setupInput } from "./input";
-import { setupHandCamera } from "./input/handtracking";
+import { createHandLandmarker, setupHandCamera, startDetectionLoop } from "./input/handtracking";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
 
@@ -46,7 +46,12 @@ async function main() {
   setupUI(scene);
 
   const handFeed = document.querySelector<HTMLVideoElement>("#hand-feed");
-  if (handFeed) setupHandCamera(handFeed).catch((err) => console.error("Camera failed:", err));
+  if (handFeed) {
+    setupHandCamera(handFeed)
+      .then(() => createHandLandmarker())
+      .then((landmarker) => startDetectionLoop(handFeed, landmarker))
+      .catch((err) => console.error("Hand tracking setup failed:", err));
+  }
 
   let lastTime = 0;
   function frame(time: number) {
