@@ -112,3 +112,12 @@ h1 {
   font-size: 0.9rem;
   text-align: left;
 }
+
+#hand-feed {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  width: 200px;
+  border-radius: 6px;
+  z-index: 10;
+}

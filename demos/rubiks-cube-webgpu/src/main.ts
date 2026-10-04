@@ -1,6 +1,7 @@
 import { resizeCanvas } from "@/webgpu-utils";
 import { Camera } from "./camera";
 import { setupInput } from "./input";
+import { setupHandCamera } from "./input/handtracking";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
 
@@ -43,6 +44,9 @@ async function main() {
 
   setupInput({ canvas, scene, camera });
   setupUI(scene);
+
+  const handFeed = document.querySelector<HTMLVideoElement>("#hand-feed");
+  if (handFeed) setupHandCamera(handFeed).catch((err) => console.error("Camera failed:", err));
 
   let lastTime = 0;
   function frame(time: number) {
