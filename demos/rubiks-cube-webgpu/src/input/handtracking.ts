@@ -25,14 +25,35 @@ export async function createHandLandmarker(): Promise<HandLandmarker> {
   });
 }
 
-export function startDetectionLoop(video: HTMLVideoElement, landmarker: HandLandmarker) {
+function drawLandmarks(ctx: CanvasRenderingContext2D, hands: Array<Array<{ x: number; y: number }>>) {
+  const { width, height } = ctx.canvas;
+  ctx.clearRect(0, 0, width, height);
+
+  ctx.fillStyle = "#4ad66d";
+  for (const landmarks of hands) {
+    for (const point of landmarks) {
+      ctx.beginPath();
+      ctx.arc(point.x * width, point.y * height, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+export function startDetectionLoop(video: HTMLVideoElement, landmarker: HandLandmarker, canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext("2d")!;
   let lastVideoTime = -1;
 
   function loop() {
     if (video.currentTime !== lastVideoTime) {
       lastVideoTime = video.currentTime;
+
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
       const result = landmarker.detectForVideo(video, performance.now());
-      console.log(`hands: ${result.landmarks.length}`, result.landmarks);
+      drawLandmarks(ctx, result.landmarks);
     }
     requestAnimationFrame(loop);
   }

@@ -46,10 +46,11 @@ async function main() {
   setupUI(scene);
 
   const handFeed = document.querySelector<HTMLVideoElement>("#hand-feed");
-  if (handFeed) {
+  const handOverlay = document.querySelector<HTMLCanvasElement>("#hand-overlay");
+  if (handFeed && handOverlay) {
     setupHandCamera(handFeed)
       .then(() => createHandLandmarker())
-      .then((landmarker) => startDetectionLoop(handFeed, landmarker))
+      .then((landmarker) => startDetectionLoop(handFeed, landmarker, handOverlay))
       .catch((err) => console.error("Hand tracking setup failed:", err));
   }
 
