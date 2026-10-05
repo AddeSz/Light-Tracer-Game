@@ -1,4 +1,4 @@
-import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+import { FilesetResolver, HandLandmarker, type HandLandmarkerResult } from "@mediapipe/tasks-vision";
 
 export async function setupHandCamera(video: HTMLVideoElement) {
   const stream = await navigator.mediaDevices.getUserMedia({
@@ -25,7 +25,7 @@ export async function createHandLandmarker(): Promise<HandLandmarker> {
   });
 }
 
-function drawLandmarks(ctx: CanvasRenderingContext2D, hands: Array<Array<{ x: number; y: number }>>) {
+export function drawLandmarks(ctx: CanvasRenderingContext2D, hands: Array<Array<{ x: number; y: number }>>) {
   const { width, height } = ctx.canvas;
   ctx.clearRect(0, 0, width, height);
 
@@ -39,7 +39,12 @@ function drawLandmarks(ctx: CanvasRenderingContext2D, hands: Array<Array<{ x: nu
   }
 }
 
-export function startDetectionLoop(video: HTMLVideoElement, landmarker: HandLandmarker, canvas: HTMLCanvasElement) {
+export function startDetectionLoop(
+  video: HTMLVideoElement,
+  landmarker: HandLandmarker,
+  canvas: HTMLCanvasElement,
+  onResult?: (result: HandLandmarkerResult) => void
+) {
   const ctx = canvas.getContext("2d")!;
   let lastVideoTime = -1;
 
@@ -54,6 +59,7 @@ export function startDetectionLoop(video: HTMLVideoElement, landmarker: HandLand
 
       const result = landmarker.detectForVideo(video, performance.now());
       drawLandmarks(ctx, result.landmarks);
+      onResult?.(result);
     }
     requestAnimationFrame(loop);
   }

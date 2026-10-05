@@ -1,7 +1,7 @@
 import { resizeCanvas } from "@/webgpu-utils";
 import { Camera } from "./camera";
 import { setupInput } from "./input";
-import { createHandLandmarker, setupHandCamera, startDetectionLoop } from "./input/handtracking";
+import { createHandLandmarker, drawLandmarks, setupHandCamera, startDetectionLoop } from "./input/handtracking";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "./scene";
 
@@ -47,10 +47,22 @@ async function main() {
 
   const handFeed = document.querySelector<HTMLVideoElement>("#hand-feed");
   const handOverlay = document.querySelector<HTMLCanvasElement>("#hand-overlay");
-  if (handFeed && handOverlay) {
+  const cubeOverlay = document.querySelector<HTMLCanvasElement>("#cube-overlay");
+  const cubeOverlayCtx = cubeOverlay?.getContext("2d");
+
+  if (handFeed && handOverlay && cubeOverlay && cubeOverlayCtx) {
     setupHandCamera(handFeed)
       .then(() => createHandLandmarker())
-      .then((landmarker) => startDetectionLoop(handFeed, landmarker, handOverlay))
+      .then((landmarker) =>
+        startDetectionLoop(handFeed, landmarker, handOverlay, (result) => {
+          const rect = canvas.getBoundingClientRect();
+          if (cubeOverlay.width !== rect.width || cubeOverlay.height !== rect.height) {
+            cubeOverlay.width = rect.width;
+            cubeOverlay.height = rect.height;
+          }
+          drawLandmarks(cubeOverlayCtx, result.landmarks);
+        })
+      )
       .catch((err) => console.error("Hand tracking setup failed:", err));
   }
 
